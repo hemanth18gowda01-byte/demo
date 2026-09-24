@@ -51,7 +51,7 @@ contract Identity is AccessControl {
         uint256 _registeredAt,
         address _address
     ) external {
-        require(OWNER == msg.sender, "You Cannot Change Anything here....!!!!");
+        require(role[msg.sender]==Role.ADMIN || role[msg.sender]==Role.MANAGER || role[msg.sender]==Role.AUDITOR, "You Cannot Change Anything here....!!!!");
         require(!dids[_address].active, "Candidate Already Registered");
         dids[_address] = DIDRegistry({
             did: _did,
@@ -69,7 +69,7 @@ contract Identity is AccessControl {
         view
         returns (string memory, bytes32, EntityType, bool, uint256, address)
     {
-        require(OWNER == msg.sender, "You Cannot Change Anything here....!!!!");
+        require(role[msg.sender]==Role.ADMIN || role[msg.sender]==Role.MANAGER || role[msg.sender]==Role.AUDITOR, "You Cannot Change Anything here....!!!!");
         require(dids[_address].active, "No Candidate Registered in this Identity");
         return (
             dids[_address].did,
@@ -82,14 +82,14 @@ contract Identity is AccessControl {
     }
 
     function updateIdentity(address _address, bytes32 _documentHash, EntityType _entityType) external {
-        require(OWNER == msg.sender, "You Cannot Change Anything here....!!!!");
+        require(role[msg.sender]==Role.ADMIN || role[msg.sender]==Role.MANAGER || role[msg.sender]==Role.AUDITOR, "You Cannot Change Anything here....!!!!");
         require(dids[_address].active, "No Candidate Registered in this Identity");
         dids[_address].documentHash = _documentHash;
         dids[_address].entityType = _entityType;
     }
 
     function deactivateIdentity(address _address) external {
-        require(OWNER == msg.sender, "You Cannot Change Anything here....!!!!");
+        require(role[msg.sender]==Role.ADMIN || role[msg.sender]==Role.MANAGER || role[msg.sender]==Role.AUDITOR, "You Cannot Change Anything here....!!!!");
         require(dids[_address].active, "Candidate Already Deactivated,No need to Deactivate");
         dids[_address].active = false;
     }
