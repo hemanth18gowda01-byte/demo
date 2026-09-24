@@ -29,12 +29,17 @@ function addressFrom(idName, fallback) {
     return document.getElementById(idName).value.trim() || fallback;
 }
 
+async function readIdentityRecord(contract, address) {
+    // The public mapping getter is available on the existing deployment and has no role check.
+    return contract.dids(address);
+}
+
 async function getIdentity() {
     try {
         const caller = await account();
         const target = addressFrom("readIdentityAddress", caller);
         const contract = await getContract(CONTRACTS.identity, identityABI);
-        const record = await contract.getIdentities(target);
+        const record = await readIdentityRecord(contract, target);
         result("getIdentityResult", record[3] ? "Identity found" : "No active identity", [
             "Wallet: " + target,
             "DID: " + (record[0] || "Not registered"),
@@ -63,7 +68,7 @@ async function createIdentity() {
         const tx = await contract.registerIdentities(did, documentHash, document.getElementById("createEntityType").value, Math.floor(Date.now() / 1000), target);
         result("createIdentityResult", "Transaction submitted", ["DID: " + did, "Wallet: " + target, "Transaction: " + tx.hash], tx.hash);
         await tx.wait();
-        const record = await contract.getIdentities(target);
+        const record = await readIdentityRecord(contract, target);
         result("createIdentityResult", "DID registered successfully", ["DID: " + record[0], "Document hash: " + record[1], "Entity type: " + record[2], "Wallet: " + target, "Active: " + record[3], "Registered by: " + record[5], "Transaction: " + tx.hash], tx.hash);
     } catch (error) {
         result("createIdentityResult", "Identity creation failed", [formatError(error)]);
@@ -86,7 +91,7 @@ async function updateIdentity() {
         const tx = await contract.updateIdentity(target, documentHash, document.getElementById("updateEntityType").value);
         result("updateIdentityResult", "Update submitted", ["Wallet: " + target, "New document hash: " + documentHash, "Transaction: " + tx.hash], tx.hash);
         await tx.wait();
-        const record = await contract.getIdentities(target);
+        const record = await readIdentityRecord(contract, target);
         result("updateIdentityResult", "Identity updated successfully", ["Wallet: " + target, "DID: " + record[0], "Document hash: " + record[1], "Entity type: " + record[2], "Active: " + record[3], "Transaction: " + tx.hash], tx.hash);
     } catch (error) {
         result("updateIdentityResult", "Identity update failed", [formatError(error)]);
