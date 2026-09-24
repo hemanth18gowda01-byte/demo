@@ -7,12 +7,11 @@ import {Identity} from "../src/IdentityRegistry.sol";
 import {AccessControl} from "../src/AccessControl.sol";
 import {DigitalAssetNFT} from "../src/AssetNFT.sol";
 import {AssetMarketplace} from "../src/AssetMarketplace.sol";
-import {StableCoinTransaction} from "../src/StableCoinTransaction.sol";
 import {HelperConfigure} from "./HelperConfigure.s.sol";
 import {SmartAccount} from "../src/accountAbstraction/SmartAccount.sol";
 
 contract Deploy is Script {
-    address internal constant DEFAULT_SEPOLIA_USDC = 0x1C7d4b196CB0C7B01D7F6E2B8D5b4A1D0a8Bc4cA;
+    address internal constant DEFAULT_SEPOLIA_USDC = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
 
     function run() external {
         (HelperConfigure helperConfigure, SmartAccount smartAccount) = deploySmartAccount();
@@ -20,15 +19,16 @@ contract Deploy is Script {
         (Identity identity, AccessControl accessControl, DigitalAssetNFT digitalAssetNFT) =
             deployContracts(config.account);
 
-        StableCoinTransaction stableCoin = deployStableCoin();
-        AssetMarketplace marketplace = deployMarketplace(address(stableCoin), config.account);
+        address usdcAddress = vm.envOr("USDC_ADDRESS", DEFAULT_SEPOLIA_USDC);
+        AssetMarketplace marketplace = deployMarketplace(usdcAddress, config.account);
 
-        console.log("SmartAccount deployed at:", address(smartAccount));
-        console.log("Identity deployed at:", address(identity));
-        console.log("AccessControl deployed at:", address(accessControl));
-        console.log("DigitalAssetNFT deployed at:", address(digitalAssetNFT));
-        console.log("StableCoinTransaction deployed at:", address(stableCoin));
-        console.log("AssetMarketplace deployed at:", address(marketplace));
+        console.log("Frontend CONTRACTS values:");
+        console.log("smartAccount:", address(smartAccount));
+        console.log("identity:", address(identity));
+        console.log("accessControl:", address(accessControl));
+        console.log("assetNFT:", address(digitalAssetNFT));
+        console.log("stableCoin:", usdcAddress);
+        console.log("marketplace:", address(marketplace));
     }
 
     function deploySmartAccount() public returns (HelperConfigure, SmartAccount) {
@@ -55,23 +55,13 @@ contract Deploy is Script {
         return (identity, accessControl, digitalAssetNFT);
     }
 
-    function deployStableCoin() public returns (StableCoinTransaction) {
-        HelperConfigure helperConfigure = new HelperConfigure();
-        HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
-        address usdcAddress = vm.envOr("USDC_ADDRESS", DEFAULT_SEPOLIA_USDC);
-        vm.startBroadcast(config.account);
-        StableCoinTransaction stableCoin = new StableCoinTransaction(usdcAddress);
-        vm.stopBroadcast();
-        return stableCoin;
-    }
-
-    function deployMarketplace(address stableCoinAddress, address contractOwner) public returns (AssetMarketplace) {
-        require(stableCoinAddress != address(0), "Invalid stablecoin contract address");
+    function deployMarketplace(address usdcAddress, address contractOwner) public returns (AssetMarketplace) {
+        require(usdcAddress != address(0), "Invalid USDC address");
         require(contractOwner != address(0), "Invalid contract owner");
         HelperConfigure helperConfigure = new HelperConfigure();
         HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
         vm.startBroadcast(config.account);
-        AssetMarketplace marketplace = new AssetMarketplace(stableCoinAddress);
+        AssetMarketplace marketplace = new AssetMarketplace(usdcAddress);
         marketplace.transferOwnership(contractOwner);
         vm.stopBroadcast();
         return marketplace;
