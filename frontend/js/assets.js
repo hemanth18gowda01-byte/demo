@@ -160,28 +160,6 @@ async function updateState() {
     }
 }
 
-async function transferAsset() {
-    const button = document.getElementById("transferAssetButton");
-    try {
-        button.disabled = true;
-        const tokenId = document.getElementById("transferTokenId").value;
-        const newTokenId = document.getElementById("newTokenId").value;
-        const newOwner = document.getElementById("newOwnerAddress").value.trim();
-        if (!tokenId || !newTokenId || !newOwner) throw new Error("Enter current token ID, new token ID, and new owner address.");
-        setStatus("Requesting transfer signature in MetaMask...", "", "transferResult");
-        const contract = await getContract(CONTRACTS.assetNFT, assetABI);
-        const tx = await contract.transferAsset(tokenId, newTokenId, newOwner);
-        setStatus("Transfer submitted.", tx.hash, "transferResult");
-        await tx.wait();
-        const asset = await contract.assets(tokenId);
-        setStatus("Asset transferred successfully on Sepolia.", tx.hash, "transferResult", formatAsset(asset));
-    } catch (error) {
-        setStatus(formatError(error), "", "transferResult");
-    } finally {
-        button.disabled = false;
-    }
-}
-
 async function approveToken() {
     try {
         const address = document.getElementById("approvalAddress").value.trim();
@@ -213,23 +191,6 @@ async function setOperator() {
     }
 }
 
-async function transferFrom() {
-    try {
-        const from = document.getElementById("transferFromAddress").value.trim();
-        const to = document.getElementById("transferToAddress").value.trim();
-        const tokenId = document.getElementById("approvalTokenId").value;
-        if (!from || !to || !tokenId) throw new Error("Enter current owner, recipient, and token ID.");
-        const contract = await getContract(CONTRACTS.assetNFT, assetABI);
-        const tx = await contract.transferFrom(from, to, tokenId);
-        setStatus("ERC-721 transfer submitted.", tx.hash, "erc721Result");
-        await tx.wait();
-        const currentOwner = await contract.ownerOf(tokenId);
-        setStatus("ERC-721 transfer confirmed.", tx.hash, "erc721Result", "Token: " + tokenId + "\nCurrent owner: " + currentOwner);
-    } catch (error) {
-        setStatus(formatError(error), "", "erc721Result");
-    }
-}
-
 async function loadAsset() {
     try {
         const contract = await getContract(CONTRACTS.assetNFT, assetABI, false);
@@ -250,8 +211,6 @@ document.getElementById("mintButton").addEventListener("click", mint);
 document.getElementById("enableAssetPermissionsButton").addEventListener("click", enableAssetPermissions);
 document.getElementById("assignButton").addEventListener("click", assign);
 document.getElementById("updateStateButton").addEventListener("click", updateState);
-document.getElementById("transferAssetButton").addEventListener("click", transferAsset);
 document.getElementById("approveButton").addEventListener("click", approveToken);
 document.getElementById("setOperatorButton").addEventListener("click", setOperator);
-document.getElementById("transferFromButton").addEventListener("click", transferFrom);
 document.getElementById("historyButton").addEventListener("click", loadAsset);

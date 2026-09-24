@@ -128,32 +128,20 @@
             <option value="2">In use</option>
             <option value="3">Maintenance</option>
             <option value="4">Returned</option>
-            <option value="5">Decommissioned</option>
+            <option value="5">For sale</option>
+            <option value="6">Decommissioned</option>
         </select>
         <button id="updateStateButton">Update State</button>
         <div id="stateResult" class="result-panel"><p class="result-message"></p><p class="result-data"></p><a class="result-link" target="_blank" rel="noreferrer"></a></div>
     </div>
 
     <div class="card">
-        <h2>Transfer Asset Record</h2>
-
-        <input id="transferTokenId" type="number" placeholder="Current token ID">
-        <input id="newTokenId" type="number" placeholder="New token ID">
-        <input id="newOwnerAddress" placeholder="New owner address">
-        <button id="transferAssetButton">Transfer Asset</button>
-        <div id="transferResult" class="result-panel"><p class="result-message"></p><p class="result-data"></p><a class="result-link" target="_blank" rel="noreferrer"></a></div>
-    </div>
-
-    <div class="card">
-        <h2>ERC-721 Operations</h2>
-        <input id="approvalAddress" placeholder="Approval or recipient address">
+        <h2>ERC-721 Approval</h2>
+        <input id="approvalAddress" placeholder="Approved address">
         <input id="approvalTokenId" type="number" placeholder="Token ID">
         <button id="approveButton">Approve Token</button>
         <label><input id="operatorApproved" type="checkbox" checked> Operator approved</label>
         <button id="setOperatorButton">Set Operator</button>
-        <button id="transferFromButton">Transfer From</button>
-        <input id="transferFromAddress" placeholder="Current owner address">
-        <input id="transferToAddress" placeholder="Recipient address">
         <div id="erc721Result" class="result-panel"><p class="result-message"></p><p class="result-data"></p><a class="result-link" target="_blank" rel="noreferrer"></a></div>
     </div>
 
