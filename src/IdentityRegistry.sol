@@ -69,7 +69,6 @@ contract Identity is AccessControl {
         view
         returns (string memory, bytes32, EntityType, bool, uint256, address)
     {
-        require(role[msg.sender]==Role.ADMIN || role[msg.sender]==Role.MANAGER || role[msg.sender]==Role.AUDITOR, "You Cannot Change Anything here....!!!!");
         require(dids[_address].active, "No Candidate Registered in this Identity");
         return (
             dids[_address].did,
