@@ -6,7 +6,6 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {AccessControl} from "./AccessControl.sol";
 
 contract DigitalAssetNFT is ERC721, AccessControl {
-    AccessControl accessControl = new AccessControl();
     uint256 private tokenID;
 
     mapping(
@@ -50,9 +49,7 @@ contract DigitalAssetNFT is ERC721, AccessControl {
     function mintAsset(string memory _name, string memory _metadataURI, string memory _assetType, bool _isActive)
         external
     {
-        require(
-            accessControl.hasPermission(msg.sender, Permission.CREATE_ASSET), "You don't have permission to mint assets"
-        );
+        require(hasPermission(msg.sender, Permission.CREATE_ASSET), "You don't have permission to mint assets");
         _safeMint(OWNER, tokenID);
         assets[tokenID] = Asset({
             tokenId: tokenID,
@@ -88,14 +85,14 @@ contract DigitalAssetNFT is ERC721, AccessControl {
     }
 
     function assignAsset(uint256 _tokenId, string memory _did, address _assignedTo) external {
-        require(accessControl.hasPermission(msg.sender, Permission.ALLOCATE_ASSET), "You cannot assign");
+        require(hasPermission(msg.sender, Permission.ALLOCATE_ASSET), "You cannot assign");
         assets[_tokenId].did = _did;
         assets[_tokenId].assigningAssetTo = _assignedTo;
         assets[_tokenId].assetState = AssetState.ALLOCATED;
     }
 
     function updateAssetState(uint256 _tokenId, AssetState _assetState) external {
-        require(accessControl.hasPermission(msg.sender, Permission.ALLOCATE_ASSET), "You cannot change");
+        require(hasPermission(msg.sender, Permission.ALLOCATE_ASSET), "You cannot change");
         assets[_tokenId].assetState = _assetState;
     }
 
@@ -108,7 +105,7 @@ contract DigitalAssetNFT is ERC721, AccessControl {
     }
 
     function transferAsset(uint256 _tokenId, uint256 _newTokenId, address _newOwnerAddress) external {
-        require(accessControl.hasPermission(msg.sender, Permission.TRANSFER_ASSET), "You cannot transfer Assets");
+        require(hasPermission(msg.sender, Permission.TRANSFER_ASSET), "You cannot transfer Assets");
         require(_newOwnerAddress != address(0), "Address doesn't exists");
         _transfer(ownerOf(_tokenId), _newOwnerAddress, _tokenId);
         assets[_tokenId].tokenId = _newTokenId;

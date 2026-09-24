@@ -39,7 +39,7 @@ contract SmartAccount is IAccount, Ownable {
         _;
     }
 
-    function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPoint {
+    function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
         if (dest == address(0)) {
             revert MinimalAccount__InvalidDestination();
         }

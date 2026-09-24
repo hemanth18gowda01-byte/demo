@@ -15,12 +15,13 @@ contract Deploy is Script {
     address internal constant DEFAULT_SEPOLIA_USDC = 0x1C7d4b196CB0C7B01D7F6E2B8D5b4A1D0a8Bc4cA;
 
     function run() external {
-        (, SmartAccount smartAccount) = deploySmartAccount();
+        (HelperConfigure helperConfigure, SmartAccount smartAccount) = deploySmartAccount();
+        HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
         (Identity identity, AccessControl accessControl, DigitalAssetNFT digitalAssetNFT) =
-            deployContracts(address(smartAccount));
+            deployContracts(config.account);
 
         StableCoinTransaction stableCoin = deployStableCoin();
-        AssetMarketplace marketplace = deployMarketplace(address(stableCoin), address(smartAccount));
+        AssetMarketplace marketplace = deployMarketplace(address(stableCoin), config.account);
 
         console.log("SmartAccount deployed at:", address(smartAccount));
         console.log("Identity deployed at:", address(identity));
@@ -39,17 +40,17 @@ contract Deploy is Script {
         return (helperConfigure, smartAccount);
     }
 
-    function deployContracts(address smartAccount) public returns (Identity, AccessControl, DigitalAssetNFT) {
-        require(smartAccount != address(0), "Invalid SmartAccount");
+    function deployContracts(address contractOwner) public returns (Identity, AccessControl, DigitalAssetNFT) {
+        require(contractOwner != address(0), "Invalid contract owner");
         HelperConfigure helperConfigure = new HelperConfigure();
         HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
         vm.startBroadcast(config.account);
         Identity identity = new Identity();
         AccessControl accessControl = new AccessControl();
         DigitalAssetNFT digitalAssetNFT = new DigitalAssetNFT();
-        identity.transferOwnership(smartAccount);
-        accessControl.transferOwnership(smartAccount);
-        digitalAssetNFT.transferOwnership(smartAccount);
+        identity.transferOwnership(contractOwner);
+        accessControl.transferOwnership(contractOwner);
+        digitalAssetNFT.transferOwnership(contractOwner);
         vm.stopBroadcast();
         return (identity, accessControl, digitalAssetNFT);
     }
@@ -64,14 +65,14 @@ contract Deploy is Script {
         return stableCoin;
     }
 
-    function deployMarketplace(address stableCoinAddress, address smartAccount) public returns (AssetMarketplace) {
+    function deployMarketplace(address stableCoinAddress, address contractOwner) public returns (AssetMarketplace) {
         require(stableCoinAddress != address(0), "Invalid stablecoin contract address");
-        require(smartAccount != address(0), "Invalid SmartAccount");
+        require(contractOwner != address(0), "Invalid contract owner");
         HelperConfigure helperConfigure = new HelperConfigure();
         HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
         vm.startBroadcast(config.account);
         AssetMarketplace marketplace = new AssetMarketplace(stableCoinAddress);
-        marketplace.transferOwnership(smartAccount);
+        marketplace.transferOwnership(contractOwner);
         vm.stopBroadcast();
         return marketplace;
     }
