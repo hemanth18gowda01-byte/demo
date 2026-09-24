@@ -1,0 +1,129 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "OWNER",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "assetsForSale",
+      "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+      "outputs": [
+        { "name": "tokenId", "type": "uint256", "internalType": "uint256" },
+        { "name": "seller", "type": "address", "internalType": "address" },
+        { "name": "salePrice", "type": "uint256", "internalType": "uint256" },
+        { "name": "status", "type": "bool", "internalType": "bool" },
+        { "name": "timeStamp", "type": "uint256", "internalType": "uint256" }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "assets",
+      "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+      "outputs": [
+        { "name": "tokenId", "type": "uint256", "internalType": "uint256" },
+        { "name": "name", "type": "string", "internalType": "string" },
+        { "name": "ownedBy", "type": "address", "internalType": "address" },
+        { "name": "metadataURI", "type": "string", "internalType": "string" },
+        { "name": "assetType", "type": "string", "internalType": "string" },
+        { "name": "assetState", "type": "uint8", "internalType": "enum DigitalAssetNFT.AssetState" },
+        { "name": "isActive", "type": "bool", "internalType": "bool" },
+        { "name": "createdBy", "type": "address", "internalType": "address" },
+        { "name": "did", "type": "string", "internalType": "string" },
+        { "name": "assigningAssetTo", "type": "address", "internalType": "address" }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "ownerOf",
+      "inputs": [{ "name": "tokenId", "type": "uint256", "internalType": "uint256" }],
+      "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "hasPermission",
+      "inputs": [
+        { "name": "_address", "type": "address", "internalType": "address" },
+        { "name": "_permission", "type": "uint8", "internalType": "enum AccessControl.Permission" }
+      ],
+      "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "usdcToken",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "contract IERC20" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "grantPermission",
+      "inputs": [
+        { "name": "_address", "type": "address", "internalType": "address" },
+        { "name": "_permission", "type": "uint8", "internalType": "enum AccessControl.Permission" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "_putAssetForSale",
+      "inputs": [
+        { "name": "_tokenId", "type": "uint256", "internalType": "uint256" },
+        { "name": "_salePrice", "type": "uint256", "internalType": "uint256" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "_buyAsset",
+      "inputs": [{ "name": "_tokenId", "type": "uint256", "internalType": "uint256" }],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "_removeAssetFromSale",
+      "inputs": [{ "name": "_tokenId", "type": "uint256", "internalType": "uint256" }],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "AssetListedForSale",
+      "inputs": [
+        { "name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+        { "name": "seller", "type": "address", "indexed": true, "internalType": "address" },
+        { "name": "salePrice", "type": "uint256", "indexed": false, "internalType": "uint256" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AssetSaleCompleted",
+      "inputs": [
+        { "name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+        { "name": "buyer", "type": "address", "indexed": true, "internalType": "address" },
+        { "name": "salePrice", "type": "uint256", "indexed": false, "internalType": "uint256" }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "AssetSaleCancelled",
+      "inputs": [
+        { "name": "tokenId", "type": "uint256", "indexed": true, "internalType": "uint256" },
+        { "name": "seller", "type": "address", "indexed": true, "internalType": "address" }
+      ],
+      "anonymous": false
+    }
+  ]
+}

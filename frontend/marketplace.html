@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Marketplace</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">BEL | Asset Marketplace</div>
+    <div id="wallet">
+        <button id="pageConnectWallet">Connect Wallet</button>
+        <span id="pageWalletStatus">Not connected</span>
+    </div>
+</nav>
+
+<main>
+    <section class="page-heading">
+        <div class="eyebrow">Marketplace</div>
+        <h1>Asset Marketplace</h1>
+        <p>List deployed marketplace assets, approve stablecoin allowance, and complete settlement on Sepolia.</p>
+    </section>
+
+    <div class="operation-grid">
+        <div class="card operation-card">
+            <h2>Read Listing</h2>
+            <input id="readTokenId" type="number" placeholder="Token ID">
+            <button id="readListingButton">Read Listing</button>
+            <div id="readListingResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+
+        <div class="card operation-card">
+            <h2>List Asset</h2>
+            <input id="listTokenId" type="number" placeholder="Token ID">
+            <input id="salePrice" placeholder="Sale price in token units">
+            <button id="listAssetButton">List For Sale</button>
+            <div id="listAssetResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+
+        <div class="card operation-card">
+            <h2>Stablecoin Allowance</h2>
+            <input id="allowanceAmount" placeholder="Approval amount in token units">
+            <button id="checkAllowanceButton">Check Allowance</button>
+            <button id="approveStablecoinButton">Approve Marketplace</button>
+            <div id="allowanceResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+
+        <div class="card operation-card">
+            <h2>Buy Asset</h2>
+            <input id="buyTokenId" type="number" placeholder="Token ID">
+            <button id="buyAssetButton">Buy Asset</button>
+            <div id="buyAssetResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+
+        <div class="card operation-card">
+            <h2>Cancel Listing</h2>
+            <input id="cancelTokenId" type="number" placeholder="Token ID">
+            <button id="cancelListingButton" class="button-danger">Cancel Listing</button>
+            <div id="cancelListingResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+
+        <div class="card operation-card">
+            <h2>Marketplace Permissions</h2>
+            <input id="permissionAddress" placeholder="Wallet address">
+            <select id="marketPermission">
+                <option value="3">TRANSFER_ASSET</option>
+                <option value="1">CREATE_ASSET</option>
+                <option value="2">ALLOCATE_ASSET</option>
+                <option value="4">VIEW_ASSET</option>
+                <option value="5">AUDIT</option>
+                <option value="6">MANAGE_EMPLOYEES</option>
+            </select>
+            <button id="checkMarketPermissionButton">Check Permission</button>
+            <button id="grantMarketPermissionButton">Grant Permission</button>
+            <div id="permissionResult" class="result-panel">
+                <p class="result-message"></p>
+                <p class="result-data"></p>
+                <a class="result-link" target="_blank" rel="noreferrer"></a>
+            </div>
+        </div>
+    </div>
+
+    <p id="marketplaceStatus"></p>
+</main>
+
+<script type="module" src="js/marketplace.js"></script>
+<script type="module" src="js/page-wallet.js"></script>
+
+</body>
+</html>
