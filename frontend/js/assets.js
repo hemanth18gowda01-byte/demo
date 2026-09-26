@@ -1,6 +1,5 @@
 import { CONTRACTS, SEPOLIA_EXPLORER } from "./config.js";
 import { getContract, formatError } from "./contracts.js";
-import { apiPost } from "./api.js";
 import assetArtifact from "../abi/AssetNFT.json" with { type: "json" };
 
 const assetABI = assetArtifact.abi || assetArtifact;
@@ -53,11 +52,9 @@ async function mint() {
     const button = document.getElementById("mintButton");
     try {
         button.disabled = true;
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         const name = document.getElementById("assetName").value.trim();
         const metadataURI = document.getElementById("metadataURI").value.trim();
         const assetType = document.getElementById("assetType").value.trim();
-        const createdBy = accounts[0];
         if (!name || !assetType) throw new Error("Enter asset name and type.");
         setStatus("Requesting mint signature in MetaMask...", "", "mintResult");
         const contract = await getContract(CONTRACTS.assetNFT, assetABI);
@@ -66,19 +63,7 @@ async function mint() {
         const receipt = await tx.wait();
         const tokenId = mintedTokenId(contract, receipt);
         const asset = await contract.assets(tokenId);
-        const metadata = await apiPost("/assets/metadata", {
-            token_id: Number(tokenId),
-            name,
-            metadata_uri: metadataURI,
-            asset_type: assetType,
-            is_active: document.getElementById("assetActive").checked,
-            created_by: createdBy,
-            transaction_hash: tx.hash
-        });
-        setStatus("Asset minted and metadata JSON saved.", tx.hash, "mintResult", [
-            formatAsset(asset),
-            `Metadata file: ${metadata.path}`
-        ].join("\n"));
+        setStatus("Asset minted successfully on Sepolia.", tx.hash, "mintResult", formatAsset(asset));
     } catch (error) {
         setStatus(formatError(error), "", "mintResult");
     } finally {
