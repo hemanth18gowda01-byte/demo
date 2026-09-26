@@ -20,7 +20,7 @@ contract Deploy is Script {
             deployContracts(config.account);
 
         address usdcAddress = vm.envOr("USDC_ADDRESS", DEFAULT_SEPOLIA_USDC);
-        AssetMarketplace marketplace = deployMarketplace(usdcAddress, config.account);
+        AssetMarketplace marketplace = deployMarketplace(address(digitalAssetNFT), usdcAddress, config.account);
 
         console.log("Frontend CONTRACTS values:");
         console.log("smartAccount:", address(smartAccount));
@@ -55,13 +55,17 @@ contract Deploy is Script {
         return (identity, accessControl, digitalAssetNFT);
     }
 
-    function deployMarketplace(address usdcAddress, address contractOwner) public returns (AssetMarketplace) {
+    function deployMarketplace(address assetNFTAddress, address usdcAddress, address contractOwner)
+        public
+        returns (AssetMarketplace)
+    {
+        require(assetNFTAddress != address(0), "Invalid NFT address");
         require(usdcAddress != address(0), "Invalid USDC address");
         require(contractOwner != address(0), "Invalid contract owner");
         HelperConfigure helperConfigure = new HelperConfigure();
         HelperConfigure.NetworkConfig memory config = helperConfigure.getConfig();
         vm.startBroadcast(config.account);
-        AssetMarketplace marketplace = new AssetMarketplace(usdcAddress);
+        AssetMarketplace marketplace = new AssetMarketplace(assetNFTAddress, usdcAddress);
         marketplace.transferOwnership(contractOwner);
         vm.stopBroadcast();
         return marketplace;

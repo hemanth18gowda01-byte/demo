@@ -2,9 +2,11 @@ import { CONTRACTS, SEPOLIA_EXPLORER } from "./config.js";
 import { connectBlockchainWallet, formatError, getContract } from "./contracts.js";
 import marketplaceArtifact from "../abi/AssetMarketplace.json" with { type: "json" };
 import erc20Artifact from "../abi/ERC20.json" with { type: "json" };
+import assetArtifact from "../abi/AssetNFT.json" with { type: "json" };
 
 const marketplaceABI = marketplaceArtifact.abi || marketplaceArtifact;
 const erc20ABI = erc20Artifact.abi || erc20Artifact;
+const assetABI = assetArtifact.abi || assetArtifact;
 const status = document.getElementById("marketplaceStatus");
 
 function showResult(panelId, message, details = "", hash = "") {
@@ -84,9 +86,26 @@ async function listAsset() {
         button.disabled = true;
         const tokenId = document.getElementById("listTokenId").value;
         if (!tokenId) throw new Error("Enter a token ID.");
+        const { address } = await connectBlockchainWallet();
         const info = await tokenInfo();
         const price = parseTokenAmount(document.getElementById("salePrice").value, info.decimals);
         const marketplace = await getContract(CONTRACTS.marketplace, marketplaceABI);
+        const assetNFT = await getContract(CONTRACTS.assetNFT, assetABI);
+        const owner = await assetNFT.ownerOf(tokenId);
+        if (owner.toLowerCase() !== address.toLowerCase()) {
+            throw new Error(`Connected wallet does not own token ${tokenId}. Current owner: ${owner}`);
+        }
+        if (!(await marketplace.hasPermission(address, 3))) {
+            throw new Error("Connected wallet lacks TRANSFER_ASSET permission on the marketplace.");
+        }
+        const approved = await assetNFT.getApproved(tokenId);
+        const approvedForAll = await assetNFT.isApprovedForAll(address, CONTRACTS.marketplace);
+        if (approved.toLowerCase() !== CONTRACTS.marketplace.toLowerCase() && !approvedForAll) {
+            showResult("listAssetResult", "Requesting NFT approval signature...");
+            const approvalTx = await assetNFT.approve(CONTRACTS.marketplace, tokenId);
+            showResult("listAssetResult", "NFT approval submitted", "Token: " + tokenId, approvalTx.hash);
+            await approvalTx.wait();
+        }
         showResult("listAssetResult", "Requesting list signature...");
         const tx = await marketplace._putAssetForSale(tokenId, price);
         showResult("listAssetResult", "List transaction submitted", "Token: " + tokenId, tx.hash);
@@ -149,7 +168,8 @@ async function buyAsset() {
         const tx = await marketplace._buyAsset(tokenId);
         showResult("buyAssetResult", "Purchase submitted", "Token: " + tokenId, tx.hash);
         await tx.wait();
-        const owner = await marketplace.ownerOf(tokenId);
+        const assetNFT = await getContract(CONTRACTS.assetNFT, assetABI, false);
+        const owner = await assetNFT.ownerOf(tokenId);
         showResult("buyAssetResult", "Asset purchased", "Token: " + tokenId + "\nCurrent owner: " + owner, tx.hash);
     } catch (error) {
         showResult("buyAssetResult", "Purchase failed", formatError(error));

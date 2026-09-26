@@ -4,7 +4,7 @@ export const CONTRACTS = {
     accessControl: "0x6411563A485D5DDAcEFB85ae18Ae1D37E8363BD3",
     assetNFT: "0x44Cbbf18eCcA63522e29f20Ec223915CDf429a16",
     stableCoin: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-    marketplace: "0x76F61e9B4a2E256c06505ab63e55Cf446D1081ca"
+    marketplace: "0x0000000000000000000000000000000000000000"
 };
 
 // This wallet owns the SmartAccount and is the intended owner of every ownable application contract.
